@@ -352,7 +352,7 @@ def kpis():
 def queue(
     bucket: str = Query("All"),
     min_conf: float = Query(0.70),
-    top_n: int = Query(100),
+    top_n: int = Query(25),
     search: str = Query(""),
 ):
     df_aging, df_customers, df_payments, df_disputes, df_comm = load_data()
