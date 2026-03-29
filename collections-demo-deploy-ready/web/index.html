@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Collections Intelligence</title>
+  <style>
+    :root{--bg:#0b0f14;--panel:#0f1621;--panel2:#101b28;--text:#e8eef7;--muted:#9aa8ba;--line:#1e2a3a;--accent:#7aa2ff;--good:#35d07f;--warn:#ffcc66;--bad:#ff6b6b;--shadow:0 12px 30px rgba(0,0,0,.45);--radius:14px;--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;--sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:var(--sans);background:radial-gradient(1200px 800px at 30% -10%, rgba(122,162,255,.22), transparent 55%),radial-gradient(900px 600px at 90% 10%, rgba(53,208,127,.12), transparent 55%),var(--bg);color:var(--text)}
+    header{padding:20px 22px 10px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;max-width:1400px;margin:0 auto}
+    .title{display:flex;gap:12px;align-items:center;min-width:260px}
+    .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg, rgba(122,162,255,.35), rgba(53,208,127,.22));border:1px solid rgba(255,255,255,.08);display:grid;place-items:center;box-shadow:var(--shadow);flex:0 0 auto}
+    .logo span{font-size:18px}.hgroup h1{margin:0;font-size:18px;letter-spacing:.2px}.hgroup p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
+    .top-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);color:var(--text);padding:9px 12px;border-radius:12px;cursor:pointer;transition:.15s ease;font-weight:600;font-size:13px}
+    .btn:hover{transform:translateY(-1px);border-color:rgba(122,162,255,.45)} .btn.primary{background:rgba(122,162,255,.18);border-color:rgba(122,162,255,.30)}
+    .grid{display:grid;grid-template-columns:280px 1.3fr 420px;gap:14px;padding:12px 18px 22px;max-width:1400px;margin:0 auto}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;min-height:120px}
+    .panel .ph{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .panel .ph h2{margin:0;font-size:13px;letter-spacing:.3px;color:rgba(232,238,247,.95)} .panel .pb{padding:12px 14px}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0}.muted{color:var(--muted);font-size:12px}.mono{font-family:var(--mono)}.subtle{color:rgba(232,238,247,.82)}
+    .kpi{display:grid;grid-template-columns:1fr;gap:10px}.kpi-card{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;align-items:baseline}
+    .kpi-card .label{color:var(--muted);font-size:11px;letter-spacing:.3px}.kpi-card .value{font-weight:800;font-size:14px}
+    input[type="range"]{width:100%}
+    input[type="text"],select{width:100%;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.08);color:var(--text);padding:10px 10px;border-radius:12px;outline:none}
+    table{width:100%;border-collapse:separate;border-spacing:0} th,td{padding:10px 10px;font-size:12.5px} th{color:rgba(154,168,186,.92);font-weight:700;text-align:left;border-bottom:1px solid rgba(255,255,255,.07)} tr{background:rgba(0,0,0,.10)} tr + tr td{border-top:1px solid rgba(255,255,255,.04)} tr:hover{background:rgba(122,162,255,.06)}
+    .right{text-align:right}.clickable{cursor:pointer}.activeRow{background:rgba(122,162,255,.10)!important}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-weight:800;font-size:11px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.05);white-space:nowrap}
+    .pill.good{border-color:rgba(53,208,127,.30);background:rgba(53,208,127,.12)} .pill.warn{border-color:rgba(255,204,102,.30);background:rgba(255,204,102,.12)} .pill.bad{border-color:rgba(255,107,107,.30);background:rgba(255,107,107,.12)} .pill.neutral{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.06)}
+    .section-title{margin:12px 0 6px;font-size:12px;color:rgba(232,238,247,.90);letter-spacing:.25px;font-weight:800}
+    .card{background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:10px 12px}
+    .detail-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.detail-title{font-weight:900;letter-spacing:.2px;margin:0;font-size:14px}.detail-sub{margin:4px 0 0;color:var(--muted);font-size:12px}
+    .detail-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.chips{display:flex;gap:8px;flex-wrap:wrap}.hr{height:1px;background:rgba(255,255,255,.06);margin:12px 0}
+    ul{margin:8px 0 0 18px;padding:0} li{margin:4px 0;color:rgba(232,238,247,.88)}
+    pre{margin:0;padding:12px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow:auto;font-family:var(--mono);font-size:12px;line-height:1.45;white-space:pre-wrap}
+    .tiny{font-size:11px;color:var(--muted)}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:999}
+    .modal-backdrop.show{display:flex}.modal{width:min(980px,100%);max-height:min(86vh,860px);overflow:auto;background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.10);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+    .modal .mh{position:sticky;top:0;padding:12px 14px;background:rgba(12,16,22,.90);border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;gap:12px;backdrop-filter:blur(10px)}
+    .modal .mh h3{margin:0;font-size:13px;letter-spacing:.3px}.modal .mb{padding:14px}.xbtn{padding:7px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--text);cursor:pointer;font-weight:900}
+    @media (max-width:1120px){header{padding:18px 16px 8px}.grid{grid-template-columns:1fr;padding:10px 12px 18px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">
+      <div class="logo"><span>💰</span></div>
+      <div class="hgroup">
+        <h1>Collections Intelligence</h1>
+        <p>Deploy-ready public demo</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button id="btnBrief" class="btn primary">Daily Brief</button>
+      <button id="btnRefresh" class="btn">Refresh</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="ph"><h2>Filters</h2><span class="muted" id="asOf">Live</span></div>
+      <div class="pb">
+        <div class="kpi">
+          <div class="kpi-card"><div class="label">TOTAL OPEN</div><div class="value" id="kpiTotal">$—</div></div>
+          <div class="kpi-card"><div class="label">INVOICES</div><div class="value" id="kpiInv">—</div></div>
+          <div class="kpi-card"><div class="label">AVG DPD</div><div class="value" id="kpiDpd">—</div></div>
+          <div class="kpi-card"><div class="label">DISPUTES OPEN</div><div class="value" id="kpiDisp">—</div></div>
+        </div>
+        <div class="hr"></div>
+        <div class="row"><div class="muted">Aging Bucket</div></div>
+        <select id="bucket">
+          <option value="All">All</option>
+          <option value="Current">Current</option>
+          <option value="1-30">1-30</option>
+          <option value="31-60">31-60</option>
+          <option value="61-90">61-90</option>
+          <option value="90+">90+</option>
+        </select>
+        <div class="row" style="margin-top:12px;"><div class="muted">Min Confidence</div><div class="mono subtle" id="minConfLabel">0.70</div></div>
+        <input id="minConf" type="range" min="0" max="1" step="0.01" value="0.70"/>
+        <div class="row" style="margin-top:12px;"><div class="muted">Search</div></div>
+        <input id="search" type="text" placeholder="Customer or invoice" />
+        <div class="row" style="margin-top:12px;"><button class="btn primary" id="btnApply" style="width:100%;">Apply</button></div>
+        <div class="hr"></div>
+        <div class="tiny">Edit <span class="mono">API_BASE</span> in this file after backend deploy.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ph"><h2>Priority Queue</h2><span class="muted" id="queueMeta">—</span></div>
+      <div class="pb" style="padding:0;">
+        <table>
+          <thead><tr><th>Customer</th><th>Invoice</th><th class="right">Open</th><th class="right">DPD</th><th>Action</th><th class="right">Priority</th></tr></thead>
+          <tbody id="queueBody"><tr><td colspan="6" class="muted" style="padding:14px;">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ph"><h2>Action Detail</h2><span class="muted" id="detailMeta">—</span></div>
+      <div class="pb">
+        <div id="detailEmpty" class="card"><div class="muted">Select a row to see the recommendation + Why.</div></div>
+        <div id="detail" style="display:none;">
+          <div class="detail-head">
+            <div><p class="detail-title" id="dTitle">—</p><p class="detail-sub" id="dSub">—</p></div>
+            <div class="detail-actions"><button class="btn primary" id="btnWhy">Why</button></div>
+          </div>
+          <div class="hr"></div>
+          <div class="card">
+            <div class="muted">Recommendation</div>
+            <div class="section-title" id="dAction">—</div>
+            <div class="chips" style="margin-top:8px;">
+              <span class="pill neutral" id="dBucket">Bucket: —</span>
+              <span class="pill neutral" id="dConf">Conf: —</span>
+              <span class="pill neutral" id="dOpen">Open: —</span>
+              <span class="pill neutral" id="dDpd">DPD: —</span>
+              <span class="pill neutral" id="dPriority">Priority: —</span>
+            </div>
+            <div class="hr"></div>
+            <div class="muted">Notes</div>
+            <ul id="dNotes"><li>Select Why for explanation and next best actions.</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal">
+      <div class="mh"><h3 id="modalTitle">Output</h3><button class="xbtn" id="modalClose">Close</button></div>
+      <div class="mb" id="modalBody"><div class="muted">Loading…</div></div>
+    </div>
+  </div>
+
+<script>
+const API_BASE = "https://YOUR-RENDER-SERVICE.onrender.com";
+const API = {
+  kpis: `${API_BASE}/api/kpis`,
+  queue: `${API_BASE}/api/queue`,
+  detail: `${API_BASE}/api/detail`,
+  brief: `${API_BASE}/api/brief_llm`,
+  why: `${API_BASE}/api/why_llm`,
+  whyFallback: `${API_BASE}/api/explain_llm`
+};
+
+const $ = (id) => document.getElementById(id);
+
+function escapeHtml(s){ return String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+function money(x){ const n = Number(x); return isFinite(n) ? n.toLocaleString(undefined,{style:"currency",currency:"USD",maximumFractionDigits:2}) : "—"; }
+function num(x,d=0){ const n = Number(x); return isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:d}) : "—"; }
+
+async function apiGet(url){
+  const r = await fetch(url);
+  if(!r.ok){
+    const t = await r.text();
+    const err = new Error(`HTTP ${r.status}`);
+    err.body = t;
+    throw err;
+  }
+  return await r.json();
+}
+
+function openModal(title){
+  $("modalTitle").textContent = title || "Output";
+  $("modalBody").innerHTML = `<div class="muted">Loading…</div>`;
+  $("modalBackdrop").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function closeModal(){
+  $("modalBackdrop").classList.remove("show");
+  $("modalBody").innerHTML = "";
+  document.body.style.overflow = "";
+}
+$("modalClose").addEventListener("click", closeModal);
+$("modalBackdrop").addEventListener("click", (e)=> { if(e.target === $("modalBackdrop")) closeModal(); });
+window.addEventListener("keydown", (e)=> { if(e.key === "Escape") closeModal(); });
+
+function priorityPill(raw){
+  const s = Number(raw ?? 0);
+  if(!isFinite(s)) return `<span class="pill neutral">—</span>`;
+  let cls = "neutral", icon = "•";
+  if (s >= 75000) { cls="bad"; icon="🔥"; }
+  else if (s >= 25000) { cls="warn"; icon="⚠️"; }
+  else if (s >= 5000) { cls="neutral"; icon="•"; }
+  else { cls="good"; icon="✅"; }
+  return `<span class="pill ${cls}">${icon} ${s.toLocaleString(undefined,{maximumFractionDigits:2})}</span>`;
+}
+
+function renderAIHuman(obj){
+  const data = obj?.result ?? obj ?? {};
+  const why = data.why_summary || data.summary || "";
+  const signals = Array.isArray(data.top_signals) ? data.top_signals : [];
+  const risks = Array.isArray(data.risks) ? data.risks : [];
+  const nba = Array.isArray(data.next_best_actions) ? data.next_best_actions : [];
+
+  const sec = (title, items) => !items.length ? "" : `<div class="section-title">${escapeHtml(title)}</div><div class="card"><ul>${items.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul></div>`;
+
+  return `${why ? `<div class="section-title">Summary</div><div class="card"><div class="subtle">${escapeHtml(why)}</div></div>` : ""}${sec("Signals", signals)}${sec("Risks", risks)}${sec("Next best actions", nba)}<div class="hr"></div><details><summary class="tiny" style="cursor:pointer;">Raw JSON</summary><pre>${escapeHtml(JSON.stringify(data,null,2))}</pre></details>`;
+}
+
+let CURRENT = { customer_id:null, invoice_id:null, row:null };
+
+function setDetailVisible(on){
+  $("detailEmpty").style.display = on ? "none" : "block";
+  $("detail").style.display = on ? "block" : "none";
+}
+
+async function loadKPIs(){
+  try{
+    const k = await apiGet(API.kpis);
+    $("kpiTotal").textContent = money(k.total_open);
+    $("kpiInv").textContent = num(k.invoice_count,0);
+    $("kpiDpd").textContent = num(k.avg_dpd,0);
+    $("kpiDisp").textContent = num(k.disputes_open,0);
+    $("asOf").textContent = "Live";
+  }catch(e){}
+}
+
+async function loadQueue(){
+  const bucket = $("bucket").value;
+  const minConf = Number($("minConf").value || 0.70);
+  const search = $("search").value || "";
+  $("queueMeta").textContent = `bucket=${bucket}, min_conf=${minConf.toFixed(2)}`;
+  $("queueBody").innerHTML = `<tr><td colspan="6" class="muted" style="padding:14px;">Loading…</td></tr>`;
+
+  try{
+    const url = new URL(API.queue);
+    url.searchParams.set("bucket", bucket);
+    url.searchParams.set("min_conf", String(minConf));
+    url.searchParams.set("top_n", "100");
+    url.searchParams.set("search", search);
+    const data = await apiGet(url.toString());
+    const rows = Array.isArray(data) ? data : (data.rows || []);
+
+    if(!rows.length){
+      $("queueBody").innerHTML = `<tr><td colspan="6" class="muted" style="padding:14px;">No results.</td></tr>`;
+      return;
+    }
+
+    $("queueBody").innerHTML = rows.map((r,i)=>`
+      <tr class="clickable" data-i="${i}">
+        <td><div style="font-weight:800;">${escapeHtml(r.customer_name ?? r.customer_id ?? "—")}</div><div class="tiny mono">${escapeHtml(r.customer_id ?? "")}</div></td>
+        <td class="mono">${escapeHtml(r.invoice_id ?? "—")}</td>
+        <td class="right mono">${escapeHtml(money(r.open_amount))}</td>
+        <td class="right mono">${escapeHtml(num(r.days_past_due,0))}</td>
+        <td>${escapeHtml(r.recommended_action ?? "—")}</td>
+        <td class="right">${priorityPill(r.priority_score)}</td>
+      </tr>
+    `).join("");
+
+    [...$("queueBody").querySelectorAll("tr[data-i]")].forEach(tr=>{
+      tr.addEventListener("click", async ()=>{
+        [...$("queueBody").querySelectorAll("tr")].forEach(x=>x.classList.remove("activeRow"));
+        tr.classList.add("activeRow");
+        const idx = Number(tr.getAttribute("data-i"));
+        const r = rows[idx];
+        CURRENT.customer_id = r.customer_id;
+        CURRENT.invoice_id = r.invoice_id;
+        CURRENT.row = r;
+        setDetailVisible(true);
+        $("detailMeta").textContent = `${r.customer_id} • ${r.invoice_id}`;
+        $("dTitle").textContent = `${r.customer_name ?? r.customer_id} — ${r.invoice_id}`;
+        $("dSub").textContent = `${money(r.open_amount)} • DPD ${num(r.days_past_due,0)} • ${r.aging_bucket ?? "—"}`;
+        $("dAction").textContent = r.recommended_action ?? "—";
+        $("dBucket").textContent = `Bucket: ${r.aging_bucket ?? "—"}`;
+        $("dConf").textContent = `Conf: ${num(r.confidence,2)}`;
+        $("dOpen").textContent = `Open: ${money(r.open_amount)}`;
+        $("dDpd").textContent = `DPD: ${num(r.days_past_due,0)}`;
+        $("dPriority").innerHTML = `Priority: ${priorityPill(r.priority_score)}`;
+        $("dNotes").innerHTML = `<li>Select Why for explanation and next best actions.</li>`;
+      });
+    });
+  }catch(e){
+    $("queueBody").innerHTML = `<tr><td colspan="6" style="padding:14px;"><div class="card"><div class="muted">Queue error</div><pre>${escapeHtml(e.message)}</pre></div></td></tr>`;
+  }
+}
+
+async function runWhy(){
+  if(!CURRENT.customer_id || !CURRENT.invoice_id) return;
+  openModal("Why");
+  try{
+    let data;
+    try{
+      const url = new URL(API.why);
+      url.searchParams.set("customer_id", CURRENT.customer_id);
+      url.searchParams.set("invoice_id", CURRENT.invoice_id);
+      data = await apiGet(url.toString());
+    }catch(e){
+      const url2 = new URL(API.whyFallback);
+      url2.searchParams.set("customer_id", CURRENT.customer_id);
+      url2.searchParams.set("invoice_id", CURRENT.invoice_id);
+      data = await apiGet(url2.toString());
+    }
+    $("modalBody").innerHTML = renderAIHuman(data);
+  }catch(e){
+    $("modalBody").innerHTML = `<div class="card"><div class="muted">Why error</div><pre>${escapeHtml(e.message)}</pre></div>`;
+  }
+}
+
+async function runBrief(){
+  openModal("Daily Brief");
+  try{
+    const url = new URL(API.brief);
+    url.searchParams.set("top_n", "15");
+    const data = await apiGet(url.toString());
+    const text = data.brief || data.text || data.summary || "";
+    $("modalBody").innerHTML = text ? `<div class="section-title">Brief</div><div class="card"><div class="subtle">${escapeHtml(text)}</div></div>` : renderAIHuman(data);
+  }catch(e){
+    $("modalBody").innerHTML = `<div class="card"><div class="muted">Brief error</div><pre>${escapeHtml(e.message)}</pre></div>`;
+  }
+}
+
+$("btnWhy").addEventListener("click", runWhy);
+$("btnBrief").addEventListener("click", runBrief);
+$("btnRefresh").addEventListener("click", async ()=>{ await loadKPIs(); await loadQueue(); });
+$("btnApply").addEventListener("click", loadQueue);
+$("minConf").addEventListener("input", ()=> { $("minConfLabel").textContent = Number($("minConf").value).toFixed(2); });
+$("search").addEventListener("keydown", (e)=> { if(e.key === "Enter") loadQueue(); });
+
+(async function init(){
+  $("minConfLabel").textContent = Number($("minConf").value).toFixed(2);
+  await loadKPIs();
+  await loadQueue();
+})();
+</script>
+</body>
+</html>
