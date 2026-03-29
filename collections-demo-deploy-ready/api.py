@@ -5,7 +5,7 @@ import math
 import os
 from pathlib import Path
 from datetime import datetime
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List, Tuple
 
 import pandas as pd
 from fastapi import FastAPI, Query
@@ -15,6 +15,9 @@ import requests
 
 app = FastAPI(title="Collections Intelligence API")
 
+# -----------------------------------------------------------------------------
+# Config
+# -----------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = Path(os.getenv("DATA_DIR", str(BASE_DIR / "data"))).resolve()
 WEB_DIR = Path(os.getenv("WEB_DIR", str(BASE_DIR / "web"))).resolve()
@@ -24,6 +27,8 @@ CUSTOMERS_FILE = DATA_DIR / "customers.csv"
 PAYMENTS_FILE = DATA_DIR / "payments.csv"
 DISPUTES_FILE = DATA_DIR / "disputes.csv"
 COMM_FILE = DATA_DIR / "communication_log.csv"
+
+INDEX_FILE = WEB_DIR / "index.html"
 
 DEMO_MODE = os.getenv("DEMO_MODE", "true").lower() == "true"
 OLLAMA_ENABLED = os.getenv("OLLAMA_ENABLED", "false").lower() == "true"
@@ -39,9 +44,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-_cache: Dict[str, Any] = {"data": None, "loaded_at": None}
-
-
+# -----------------------------------------------------------------------------
+# Helpers
+# -----------------------------------------------------------------------------
 def safe_num(x: Any) -> Any:
     if x is None:
         return None
@@ -78,6 +83,49 @@ def now_iso() -> str:
     return datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
 
 
+# -----------------------------------------------------------------------------
+# Data cache
+# -----------------------------------------------------------------------------
+_cache: Dict[str, Any] = {"data": None, "loaded_at": None}
+
+
+def load_data(force: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    if _cache["data"] is not None and not force:
+        return _cache["data"]
+
+    df_aging = read_csv(AGING_FILE)
+    df_customers = read_csv(CUSTOMERS_FILE)
+    df_payments = read_csv(PAYMENTS_FILE)
+    df_disputes = read_csv(DISPUTES_FILE)
+    df_comm = read_csv(COMM_FILE)
+
+    required_aging = [
+        "invoice_id",
+        "customer_id",
+        "open_amount",
+        "days_past_due",
+        "aging_bucket",
+    ]
+    missing_aging = [c for c in required_aging if c not in df_aging.columns]
+    if missing_aging:
+        raise KeyError(f"aging_snapshot.csv missing columns: {missing_aging}. Found: {list(df_aging.columns)}")
+
+    if "customer_id" not in df_customers.columns:
+        raise KeyError(f"customers.csv missing 'customer_id'. Found: {list(df_customers.columns)}")
+
+    df_aging["open_amount"] = pd.to_numeric(df_aging["open_amount"], errors="coerce")
+    df_aging["days_past_due"] = pd.to_numeric(df_aging["days_past_due"], errors="coerce")
+
+    df_aging = derive_confidence_and_action(df_aging)
+
+    _cache["data"] = (df_aging, df_customers, df_payments, df_disputes, df_comm)
+    _cache["loaded_at"] = now_iso()
+    return _cache["data"]
+
+
+# -----------------------------------------------------------------------------
+# Scoring
+# -----------------------------------------------------------------------------
 def derive_confidence_and_action(df_aging: pd.DataFrame) -> pd.DataFrame:
     df = df_aging.copy()
     dispute_col = "is_disputed_open" if "is_disputed_open" in df.columns else None
@@ -148,31 +196,11 @@ def priority_score_row(open_amount: float, days_past_due: float, confidence: flo
     return oa * time_factor * (0.5 + 0.5 * c) * dispute_factor
 
 
-def load_data(force: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    if _cache["data"] is not None and not force:
-        return _cache["data"]
-
-    df_aging = read_csv(AGING_FILE)
-    df_customers = read_csv(CUSTOMERS_FILE)
-    df_payments = read_csv(PAYMENTS_FILE)
-    df_disputes = read_csv(DISPUTES_FILE)
-    df_comm = read_csv(COMM_FILE)
-
-    required_aging = ["invoice_id", "customer_id", "open_amount", "days_past_due", "aging_bucket"]
-    missing_aging = [c for c in required_aging if c not in df_aging.columns]
-    if missing_aging:
-        raise KeyError(f"aging_snapshot.csv missing columns: {missing_aging}. Found: {list(df_aging.columns)}")
-
-    if "customer_id" not in df_customers.columns:
-        raise KeyError(f"customers.csv missing 'customer_id'. Found: {list(df_customers.columns)}")
-
-    df_aging["open_amount"] = pd.to_numeric(df_aging["open_amount"], errors="coerce")
-    df_aging["days_past_due"] = pd.to_numeric(df_aging["days_past_due"], errors="coerce")
-    df_aging = derive_confidence_and_action(df_aging)
-
-    _cache["data"] = (df_aging, df_customers, df_payments, df_disputes, df_comm)
-    _cache["loaded_at"] = now_iso()
-    return _cache["data"]
+# -----------------------------------------------------------------------------
+# Ollama
+# -----------------------------------------------------------------------------
+class OllamaError(RuntimeError):
+    pass
 
 
 def ollama_health() -> bool:
@@ -187,7 +215,7 @@ def ollama_health() -> bool:
 
 def ollama_chat(prompt: str, system: str = "") -> str:
     if not OLLAMA_ENABLED:
-        raise RuntimeError("Ollama disabled for demo")
+        raise OllamaError("Ollama disabled for demo")
     body = {
         "model": OLLAMA_MODEL,
         "messages": [
@@ -202,14 +230,17 @@ def ollama_chat(prompt: str, system: str = "") -> str:
         data = r.json()
         msg = (data.get("message") or {}).get("content")
         if not isinstance(msg, str):
-            raise RuntimeError("Unexpected Ollama response")
+            raise OllamaError("Unexpected Ollama response")
         return msg
     except requests.Timeout as e:
-        raise RuntimeError("timed out") from e
+        raise OllamaError("timed out") from e
     except requests.RequestException as e:
-        raise RuntimeError(str(e)) from e
+        raise OllamaError(str(e)) from e
 
 
+# -----------------------------------------------------------------------------
+# Route helpers
+# -----------------------------------------------------------------------------
 def build_queue(df_aging: pd.DataFrame, df_customers: pd.DataFrame) -> pd.DataFrame:
     cust_cols = ["customer_id"]
     if "customer_name" in df_customers.columns:
@@ -291,7 +322,7 @@ def why_payload(customer_id: str, invoice_id: str) -> Dict[str, Any]:
         "aging_bucket": r.get("aging_bucket"),
         "confidence": float(r.get("confidence") or 0),
         "recommended_action": r.get("recommended_action"),
-        "why_summary": f"{cust_name} / {invoice_id} is {int(dpd)} DPD with ${oa:,.2f} open. Recommended action is {r.get('recommended_action')}.",
+        "why_summary": f"{cust_name} / {invoice_id} is {int(dpd)} DPD with {oa:,.2f} open. Recommended action is {r.get('recommended_action')}.",
         "top_signals": signals,
         "risks": risks,
         "next_best_actions": next_actions,
@@ -314,6 +345,9 @@ def why_payload(customer_id: str, invoice_id: str) -> Dict[str, Any]:
         return base
 
 
+# -----------------------------------------------------------------------------
+# Routes
+# -----------------------------------------------------------------------------
 @app.get("/")
 def root():
     return FileResponse(WEB_DIR / "index.html")
@@ -326,6 +360,15 @@ def health():
         "loaded_at": _cache.get("loaded_at"),
         "demo_mode": DEMO_MODE,
         "ollama_enabled": OLLAMA_ENABLED,
+    })
+
+
+@app.get("/api/ollama_status")
+def ollama_status():
+    return safe_json({
+        "ok": ollama_health(),
+        "base_url": OLLAMA_BASE_URL,
+        "model": OLLAMA_MODEL,
     })
 
 
