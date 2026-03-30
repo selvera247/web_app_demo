@@ -5,7 +5,7 @@ import math
 import os
 from pathlib import Path
 from datetime import datetime
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Tuple
 
 import pandas as pd
 from fastapi import FastAPI, Query
@@ -15,9 +15,6 @@ import requests
 
 app = FastAPI(title="Collections Intelligence API")
 
-# -----------------------------------------------------------------------------
-# Config
-# -----------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = Path(os.getenv("DATA_DIR", str(BASE_DIR / "data"))).resolve()
 WEB_DIR = Path(os.getenv("WEB_DIR", str(BASE_DIR / "web"))).resolve()
@@ -27,8 +24,6 @@ CUSTOMERS_FILE = DATA_DIR / "customers.csv"
 PAYMENTS_FILE = DATA_DIR / "payments.csv"
 DISPUTES_FILE = DATA_DIR / "disputes.csv"
 COMM_FILE = DATA_DIR / "communication_log.csv"
-
-INDEX_FILE = WEB_DIR / "index.html"
 
 DEMO_MODE = os.getenv("DEMO_MODE", "true").lower() == "true"
 OLLAMA_ENABLED = os.getenv("OLLAMA_ENABLED", "false").lower() == "true"
@@ -44,9 +39,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# -----------------------------------------------------------------------------
-# Helpers
-# -----------------------------------------------------------------------------
+
 def safe_num(x: Any) -> Any:
     if x is None:
         return None
@@ -83,9 +76,6 @@ def now_iso() -> str:
     return datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
 
 
-# -----------------------------------------------------------------------------
-# Data cache
-# -----------------------------------------------------------------------------
 _cache: Dict[str, Any] = {"data": None, "loaded_at": None}
 
 
@@ -99,13 +89,7 @@ def load_data(force: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataF
     df_disputes = read_csv(DISPUTES_FILE)
     df_comm = read_csv(COMM_FILE)
 
-    required_aging = [
-        "invoice_id",
-        "customer_id",
-        "open_amount",
-        "days_past_due",
-        "aging_bucket",
-    ]
+    required_aging = ["invoice_id", "customer_id", "open_amount", "days_past_due", "aging_bucket"]
     missing_aging = [c for c in required_aging if c not in df_aging.columns]
     if missing_aging:
         raise KeyError(f"aging_snapshot.csv missing columns: {missing_aging}. Found: {list(df_aging.columns)}")
@@ -123,9 +107,6 @@ def load_data(force: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataF
     return _cache["data"]
 
 
-# -----------------------------------------------------------------------------
-# Scoring
-# -----------------------------------------------------------------------------
 def derive_confidence_and_action(df_aging: pd.DataFrame) -> pd.DataFrame:
     df = df_aging.copy()
     dispute_col = "is_disputed_open" if "is_disputed_open" in df.columns else None
@@ -196,9 +177,6 @@ def priority_score_row(open_amount: float, days_past_due: float, confidence: flo
     return oa * time_factor * (0.5 + 0.5 * c) * dispute_factor
 
 
-# -----------------------------------------------------------------------------
-# Ollama
-# -----------------------------------------------------------------------------
 class OllamaError(RuntimeError):
     pass
 
@@ -238,9 +216,6 @@ def ollama_chat(prompt: str, system: str = "") -> str:
         raise OllamaError(str(e)) from e
 
 
-# -----------------------------------------------------------------------------
-# Route helpers
-# -----------------------------------------------------------------------------
 def build_queue(df_aging: pd.DataFrame, df_customers: pd.DataFrame) -> pd.DataFrame:
     cust_cols = ["customer_id"]
     if "customer_name" in df_customers.columns:
@@ -345,9 +320,6 @@ def why_payload(customer_id: str, invoice_id: str) -> Dict[str, Any]:
         return base
 
 
-# -----------------------------------------------------------------------------
-# Routes
-# -----------------------------------------------------------------------------
 @app.get("/")
 def root():
     return FileResponse(WEB_DIR / "index.html")
@@ -360,15 +332,6 @@ def health():
         "loaded_at": _cache.get("loaded_at"),
         "demo_mode": DEMO_MODE,
         "ollama_enabled": OLLAMA_ENABLED,
-    })
-
-
-@app.get("/api/ollama_status")
-def ollama_status():
-    return safe_json({
-        "ok": ollama_health(),
-        "base_url": OLLAMA_BASE_URL,
-        "model": OLLAMA_MODEL,
     })
 
 
@@ -395,7 +358,7 @@ def kpis():
 def queue(
     bucket: str = Query("All"),
     min_conf: float = Query(0.70),
-    top_n: int = Query(25),
+    top_n: int = Query(12),
     search: str = Query(""),
 ):
     df_aging, df_customers, df_payments, df_disputes, df_comm = load_data()
@@ -459,14 +422,6 @@ def detail(customer_id: str, invoice_id: str):
     })
 
 
-@app.get("/api/learning")
-def learning():
-    return safe_json({
-        "status": "ok",
-        "note": "Learning endpoint active. Public demo uses deterministic mode.",
-    })
-
-
 @app.get("/api/brief_llm")
 def brief_llm(top_n: int = Query(15)):
     df_aging, df_customers, df_payments, df_disputes, df_comm = load_data()
@@ -474,11 +429,6 @@ def brief_llm(top_n: int = Query(15)):
         ["priority_score", "days_past_due", "open_amount"],
         ascending=[False, False, False]
     ).head(int(top_n))
-
-    rows = [
-        f"{r.customer_name} / {r.invoice_id} | open={r.open_amount:.2f} | dpd={r.days_past_due:.0f} | action={r.recommended_action}"
-        for _, r in df.iterrows()
-    ]
 
     fallback = {
         "brief": "Top priorities are driven by aging, balance size, and dispute status. Focus first on older, higher-balance accounts and resolve open disputes before aggressive outreach.",
@@ -489,6 +439,10 @@ def brief_llm(top_n: int = Query(15)):
     if DEMO_MODE or not ollama_health():
         return safe_json(fallback)
 
+    rows = [
+        f"{r.customer_name} / {r.invoice_id} | open={r.open_amount:.2f} | dpd={r.days_past_due:.0f} | action={r.recommended_action}"
+        for _, r in df.iterrows()
+    ]
     prompt = (
         "Write a concise daily collections brief with 5 bullets. "
         "Focus on risk, escalation, and immediate actions.\n\n"
