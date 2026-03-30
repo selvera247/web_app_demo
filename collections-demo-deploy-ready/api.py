@@ -177,6 +177,17 @@ def priority_score_row(open_amount: float, days_past_due: float, confidence: flo
     return oa * time_factor * (0.5 + 0.5 * c) * dispute_factor
 
 
+def priority_tier(score: float) -> str:
+    s = float(score or 0)
+    if s >= 250000:
+        return "Critical"
+    if s >= 100000:
+        return "High"
+    if s >= 25000:
+        return "Medium"
+    return "Low"
+
+
 class OllamaError(RuntimeError):
     pass
 
@@ -236,6 +247,7 @@ def build_queue(df_aging: pd.DataFrame, df_customers: pd.DataFrame) -> pd.DataFr
             disputed,
         )
     ]
+    df["priority_tier"] = df["priority_score"].apply(priority_tier)
     return df
 
 
@@ -297,6 +309,8 @@ def why_payload(customer_id: str, invoice_id: str) -> Dict[str, Any]:
         "aging_bucket": r.get("aging_bucket"),
         "confidence": float(r.get("confidence") or 0),
         "recommended_action": r.get("recommended_action"),
+        "priority_tier": r.get("priority_tier"),
+        "priority_score": float(r.get("priority_score") or 0),
         "why_summary": f"{cust_name} / {invoice_id} is {int(dpd)} DPD with {oa:,.2f} open. Recommended action is {r.get('recommended_action')}.",
         "top_signals": signals,
         "risks": risks,
@@ -391,6 +405,7 @@ def queue(
             "confidence": float(r.get("confidence") or 0),
             "recommended_action": r.get("recommended_action"),
             "priority_score": float(r.get("priority_score") or 0),
+            "priority_tier": r.get("priority_tier"),
         })
 
     return safe_json({"rows": rows})
@@ -415,6 +430,8 @@ def detail(customer_id: str, invoice_id: str):
         "aging_bucket": r.get("aging_bucket"),
         "recommended_action": r.get("recommended_action"),
         "confidence": float(r.get("confidence") or 0),
+        "priority_score": float(r.get("priority_score") or 0),
+        "priority_tier": r.get("priority_tier"),
         "is_disputed_open": bool(r.get("is_disputed_open")) if "is_disputed_open" in r else False,
         "currency": r.get("currency") if "currency" in r else "USD",
         "due_date": r.get("due_date") if "due_date" in r else None,
