@@ -19,747 +19,214 @@
       --bad:#ff6b6b;
       --shadow: 0 12px 30px rgba(0,0,0,.45);
       --radius:14px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --sans: ui-sans-serif, system-ui;
     }
+
     *{box-sizing:border-box}
-    html,body{height:100%}
+
     body{
       margin:0;
       font-family:var(--sans);
-      background:radial-gradient(1200px 800px at 30% -10%, rgba(122,162,255,.22), transparent 55%),
-                 radial-gradient(900px 600px at 90% 10%, rgba(53,208,127,.12), transparent 55%),
-                 var(--bg);
+      background:radial-gradient(1200px 800px at 30% -10%, rgba(122,162,255,.22), transparent 55%), var(--bg);
       color:var(--text);
     }
 
     header{
-      padding:20px 22px 10px;
+      padding:20px;
       display:flex;
-      align-items:flex-start;
       justify-content:space-between;
-      gap:16px;
-      max-width: 1400px;
-      margin: 0 auto;
+      align-items:center;
     }
-    .title{
-      display:flex; gap:12px; align-items:center;
-      min-width: 260px;
-    }
+
+    .title{display:flex; gap:12px; align-items:center;}
     .logo{
       width:38px;height:38px;border-radius:12px;
       background:linear-gradient(135deg, rgba(122,162,255,.35), rgba(53,208,127,.22));
-      border:1px solid rgba(255,255,255,.08);
       display:grid;place-items:center;
-      box-shadow:var(--shadow);
-      flex:0 0 auto;
     }
-    .logo span{font-size:18px}
-    .hgroup h1{margin:0;font-size:18px;letter-spacing:.2px}
-    .hgroup p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
 
-    .top-actions{
-      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-    }
     .btn{
       background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.10);
-      color:var(--text);
-      padding:9px 12px;
-      border-radius:12px;
+      color:white;
+      padding:8px 12px;
+      border-radius:10px;
       cursor:pointer;
-      transition:.15s ease;
-      font-weight:600;
-      font-size:13px;
     }
-    .btn:hover{transform:translateY(-1px);border-color:rgba(122,162,255,.45)}
-    .btn.primary{background:rgba(122,162,255,.18);border-color:rgba(122,162,255,.30)}
-    .btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
 
     .grid{
       display:grid;
-      grid-template-columns: 280px 1.3fr 420px;
+      grid-template-columns: 280px 1fr 400px;
       gap:14px;
-      padding:12px 18px 22px;
-      max-width: 1400px;
-      margin: 0 auto;
+      padding:20px;
     }
+
     .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.03));
+      background:var(--panel);
+      border-radius:14px;
       border:1px solid rgba(255,255,255,.08);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
       overflow:hidden;
-      min-height:120px;
-    }
-    .panel .ph{
-      padding:12px 14px;
-      border-bottom:1px solid rgba(255,255,255,.06);
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-    }
-    .panel .ph h2{
-      margin:0; font-size:13px; letter-spacing:.3px; color:rgba(232,238,247,.95);
-    }
-    .panel .pb{padding:12px 14px}
-
-    .row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:10px 0}
-    .muted{color:var(--muted); font-size:12px}
-    .mono{font-family:var(--mono)}
-    .subtle{color:rgba(232,238,247,.82)}
-
-    .kpi{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-    }
-    .kpi-card{
-      background:rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:12px;
-      padding:10px 12px;
-      display:flex; justify-content:space-between; align-items:baseline;
-    }
-    .kpi-card .label{color:var(--muted); font-size:11px; letter-spacing:.3px}
-    .kpi-card .value{font-weight:800; font-size:14px}
-
-    input[type="range"]{width:100%}
-    input[type="text"]{
-      width:100%;
-      background:rgba(0,0,0,.22);
-      border:1px solid rgba(255,255,255,.08);
-      color:var(--text);
-      padding:10px 10px;
-      border-radius:12px;
-      outline:none;
-    }
-    select{
-      width:100%;
-      background:rgba(0,0,0,.22);
-      border:1px solid rgba(255,255,255,.08);
-      color:var(--text);
-      padding:10px 10px;
-      border-radius:12px;
-      outline:none;
     }
 
-    table{width:100%; border-collapse:separate; border-spacing:0}
-    th,td{padding:10px 10px; font-size:12.5px}
-    th{color:rgba(154,168,186,.92); font-weight:700; text-align:left; border-bottom:1px solid rgba(255,255,255,.07)}
-    tr{background:rgba(0,0,0,.10)}
-    tr + tr td{border-top:1px solid rgba(255,255,255,.04)}
-    tr:hover{background:rgba(122,162,255,.06)}
-    .right{text-align:right}
-    .clickable{cursor:pointer}
-    .activeRow{background:rgba(122,162,255,.10)!important}
-
-    .pill{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:4px 8px;
-      border-radius:999px;
-      font-weight:800;
-      font-size:11px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.05);
-      white-space:nowrap;
-    }
-    .pill.good{border-color:rgba(53,208,127,.30); background:rgba(53,208,127,.12)}
-    .pill.warn{border-color:rgba(255,204,102,.30); background:rgba(255,204,102,.12)}
-    .pill.bad{border-color:rgba(255,107,107,.30); background:rgba(255,107,107,.12)}
-    .pill.neutral{border-color:rgba(255,255,255,.12); background:rgba(255,255,255,.06)}
-
-    .section-title{
-      margin:12px 0 6px;
-      font-size:12px;
-      color:rgba(232,238,247,.90);
-      letter-spacing:.25px;
-      font-weight:800;
-    }
-    .card{
-      background:rgba(0,0,0,.16);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:12px;
-      padding:10px 12px;
-    }
-    .detail-head{
-      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
-    }
-    .detail-title{
-      font-weight:900;
-      letter-spacing:.2px;
-      margin:0;
-      font-size:14px;
-    }
-    .detail-sub{margin:4px 0 0; color:var(--muted); font-size:12px}
-    .detail-actions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
-    .chips{display:flex; gap:8px; flex-wrap:wrap}
-
-    .hr{height:1px;background:rgba(255,255,255,.06);margin:12px 0}
-    ul{margin:8px 0 0 18px; padding:0}
-    li{margin:4px 0; color:rgba(232,238,247,.88)}
-    pre{
-      margin:0;
+    .ph{
       padding:12px;
-      background:rgba(0,0,0,.22);
+      border-bottom:1px solid rgba(255,255,255,.06);
+      font-weight:700;
+    }
+
+    .pb{padding:12px;}
+
+    .card{
+      background:rgba(8,12,18,.72);
       border:1px solid rgba(255,255,255,.06);
       border-radius:12px;
-      overflow:auto;
-      font-family:var(--mono);
-      font-size:12px;
-      line-height:1.45;
-      white-space:pre-wrap;
+      padding:10px;
     }
-    .tiny{font-size:11px;color:var(--muted)}
 
-    /* Modal */
+    table{width:100%; border-collapse:collapse;}
+    td,th{padding:10px; font-size:12px;}
+    th{color:var(--muted); text-align:left;}
+    tr:hover{background:rgba(122,162,255,.08); cursor:pointer;}
+
+    .mono{font-family:var(--mono)}
+
+    /* =========================
+       MODAL FIX
+       ========================= */
+
     .modal-backdrop{
-      position:fixed; inset:0;
-      background:rgba(0,0,0,.55);
+      position:fixed;
+      inset:0;
+      background:rgba(3,8,14,.78);
       display:none;
       align-items:center;
       justify-content:center;
-      padding:18px;
+      backdrop-filter: blur(10px);
       z-index:999;
     }
-    .modal-backdrop.show{display:flex}
-    .modal{
-      width:min(980px, 100%);
-      max-height:min(86vh, 860px);
-      overflow:auto;
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.6);
-    }
-    .modal .mh{
-      position:sticky; top:0;
-      padding:12px 14px;
-      background:rgba(12,16,22,.90);
-      border-bottom:1px solid rgba(255,255,255,.07);
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      backdrop-filter: blur(10px);
-    }
-    .modal .mh h3{margin:0;font-size:13px; letter-spacing:.3px}
-    .modal .mb{padding:14px}
-    .xbtn{
-      padding:7px 10px; border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.05);
-      color:var(--text); cursor:pointer; font-weight:900;
-    }
-    .xbtn:hover{border-color:rgba(122,162,255,.45)}
 
-    @media (max-width: 1120px){
-      header{padding:18px 16px 8px}
-      .grid{grid-template-columns: 1fr; padding:10px 12px 18px}
+    .modal-backdrop.show{display:flex;}
+
+    .modal{
+      width:min(900px,100%);
+      background:#0f1621;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:0 24px 70px rgba(0,0,0,.65);
+      overflow:hidden;
     }
+
+    .mh{
+      padding:12px;
+      background:#101b28;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:1px solid rgba(255,255,255,.07);
+    }
+
+    .mb{
+      padding:14px;
+      background:#0f1621;
+    }
+
+    .mb .card{
+      background:rgba(255,255,255,.03);
+    }
+
+    .section-title{
+      margin:10px 0;
+      font-weight:700;
+    }
+
+    ul{margin-left:18px;}
   </style>
 </head>
 
 <body>
-  <header>
-    <div class="title">
-      <div class="logo"><span>💰</span></div>
-      <div class="hgroup">
-        <h1 id="appTitle">Collections Intelligence</h1>
-        <p id="appSubtitle">Deploy-ready public demo</p>
-      </div>
-    </div>
 
-    <div class="top-actions">
-      <button id="btnBrief" class="btn primary">Daily Brief</button>
-      <button id="btnRefresh" class="btn">Refresh</button>
-    </div>
-  </header>
-
-  <div class="grid">
-    <!-- Left -->
-    <div class="panel">
-      <div class="ph">
-        <h2>Filters</h2>
-        <span class="muted" id="asOf">Live</span>
-      </div>
-
-      <div class="pb">
-        <div class="kpi" id="kpis">
-          <div class="kpi-card"><div class="label">TOTAL OPEN</div><div class="value" id="kpiTotal">$—</div></div>
-          <div class="kpi-card"><div class="label">INVOICES</div><div class="value" id="kpiInv">—</div></div>
-          <div class="kpi-card"><div class="label">AVG DPD</div><div class="value" id="kpiDpd">—</div></div>
-          <div class="kpi-card"><div class="label">DISPUTES OPEN</div><div class="value" id="kpiDisp">—</div></div>
-        </div>
-
-        <div class="hr"></div>
-
-        <div class="row">
-          <div class="muted">Aging Bucket</div>
-        </div>
-        <select id="bucket">
-          <option value="All">All</option>
-          <option value="Current">Current</option>
-          <option value="1-30">1-30</option>
-          <option value="31-60">31-60</option>
-          <option value="61-90">61-90</option>
-          <option value="90+">90+</option>
-        </select>
-
-        <div class="row" style="margin-top:12px;">
-          <div class="muted">Min Confidence</div>
-          <div class="mono subtle" id="minConfLabel">0.70</div>
-        </div>
-        <input id="minConf" type="range" min="0" max="1" step="0.01" value="0.70"/>
-
-        <div class="row" style="margin-top:12px;">
-          <div class="muted">Search (customer or invoice)</div>
-        </div>
-        <input id="search" type="text" placeholder="Customer or invoice" />
-
-        <div class="row" style="margin-top:12px;">
-          <button class="btn primary" id="btnApply" style="width:100%;">Apply</button>
-        </div>
-
-        <div class="hr"></div>
-        <div class="tiny">Showing a focused list instead of the full portfolio to keep the demo easy to scan.</div>
-      </div>
-    </div>
-
-    <!-- Middle -->
-    <div class="panel">
-      <div class="ph">
-        <h2>Priority Queue</h2>
-        <span class="muted" id="queueMeta">Top prioritized accounts for today</span>
-      </div>
-
-      <div class="pb" style="padding:0;">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:40%;">Customer</th>
-              <th style="width:16%;">Invoice</th>
-              <th class="right" style="width:14%;">Open</th>
-              <th class="right" style="width:10%;">DPD</th>
-              <th style="width:30%;">Action</th>
-              <th class="right" style="width:12%;">Priority</th>
-            </tr>
-          </thead>
-          <tbody id="queueBody">
-            <tr><td colspan="6" class="muted" style="padding:14px;">Loading…</td></tr>
-          </tbody>
-        </table>
-        <div style="padding:10px 14px; border-top:1px solid rgba(255,255,255,.06);" class="tiny" id="queueFooter">
-          Showing top prioritized accounts.
-        </div>
-      </div>
-    </div>
-
-    <!-- Right -->
-    <div class="panel">
-      <div class="ph">
-        <h2>Action Detail</h2>
-        <span class="muted" id="detailMeta">—</span>
-      </div>
-
-      <div class="pb">
-        <div id="detailEmpty" class="card">
-          <div class="muted">Select a row to see the recommendation + Why.</div>
-        </div>
-
-        <div id="detail" style="display:none;">
-          <div class="detail-head">
-            <div>
-              <p class="detail-title" id="dTitle">—</p>
-              <p class="detail-sub" id="dSub">—</p>
-            </div>
-            <div class="detail-actions">
-              <button class="btn primary" id="btnWhy">Why (AI)</button>
-              <button class="btn" id="btnDraftEmail">Draft Email</button>
-              <button class="btn" id="btnDraftCall">Draft Call</button>
-            </div>
-          </div>
-
-          <div class="hr"></div>
-
-          <div class="card">
-            <div class="muted">Recommendation</div>
-            <div class="section-title" id="dAction">—</div>
-
-            <div class="chips" style="margin-top:8px;">
-              <span class="pill neutral" id="dBucket">Bucket: —</span>
-              <span class="pill neutral" id="dConf">Conf: —</span>
-              <span class="pill neutral" id="dOpen">Open: —</span>
-              <span class="pill neutral" id="dDpd">DPD: —</span>
-              <span class="pill neutral" id="dPriority">Priority: —</span>
-            </div>
-
-            <div class="hr"></div>
-
-            <div class="muted">Notes</div>
-            <ul id="dNotes">
-              <li>Select Why (AI) for explanation and next best actions.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+<header>
+  <div class="title">
+    <div class="logo">💰</div>
+    <div>
+      <div style="font-weight:800">Collections Intelligence</div>
+      <div style="font-size:12px;color:var(--muted)">Agentic AR Copilot</div>
     </div>
   </div>
 
-  <!-- Modal -->
-  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" id="modal">
-      <div class="mh">
-        <h3 id="modalTitle">AI Output</h3>
-        <button class="xbtn" id="modalClose">Close</button>
-      </div>
-      <div class="mb" id="modalBody">
-        <div class="muted">Loading…</div>
+  <button class="btn" id="btnWhy">Why (AI)</button>
+</header>
+
+<div class="grid">
+
+  <div class="panel">
+    <div class="ph">Filters</div>
+    <div class="pb">
+      <div class="card">Controls here</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">Priority Queue</div>
+    <div class="pb">
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Invoice</th>
+            <th>Open</th>
+            <th>DPD</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Company_28</td>
+            <td class="mono">INV-108357</td>
+            <td>$260,129</td>
+            <td>128</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">Detail</div>
+    <div class="pb">
+      <div class="card">Select row</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div id="modalBackdrop" class="modal-backdrop">
+  <div class="modal">
+    <div class="mh">
+      <div>Why (AI)</div>
+      <button class="btn" onclick="closeModal()">Close</button>
+    </div>
+    <div class="mb" id="modalBody">
+      <div class="card">
+        <div class="section-title">Summary</div>
+        <div>Clean readable explanation here.</div>
       </div>
     </div>
   </div>
+</div>
 
 <script>
-  const API_BASE = "https://web-app-demo-pwsh.onrender.com";
+function openModal(){
+  document.getElementById("modalBackdrop").classList.add("show");
+}
 
-  const API = {
-    kpis: `${API_BASE}/api/kpis`,
-    queue: `${API_BASE}/api/queue`,
-    detail: `${API_BASE}/api/detail`,
-    brief: `${API_BASE}/api/brief_llm`,
-    why: `${API_BASE}/api/why_llm`,
-    whyFallback: `${API_BASE}/api/explain_llm`
-  };
+function closeModal(){
+  document.getElementById("modalBackdrop").classList.remove("show");
+}
 
-  const $ = (id) => document.getElementById(id);
-
-  function escapeHtml(s){
-    return String(s ?? "")
-      .replaceAll("&","&amp;").replaceAll("<","&lt;")
-      .replaceAll(">","&gt;").replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-
-  function money(x){
-    const n = Number(x);
-    if (!isFinite(n)) return "—";
-    return n.toLocaleString(undefined,{style:"currency",currency:"USD",maximumFractionDigits:2});
-  }
-
-  function num(x, d=0){
-    const n = Number(x);
-    if (!isFinite(n)) return "—";
-    return n.toLocaleString(undefined,{maximumFractionDigits:d});
-  }
-
-  async function apiGet(url){
-    const r = await fetch(url);
-    if(!r.ok){
-      const t = await r.text();
-      const err = new Error(`HTTP ${r.status}`);
-      err.status = r.status;
-      err.body = t;
-      err.url = url;
-      throw err;
-    }
-    return await r.json();
-  }
-
-  function openModal(title){
-    $("modalTitle").textContent = title || "Output";
-    $("modalBody").innerHTML = `<div class="muted">Loading…</div>`;
-    $("modalBackdrop").classList.add("show");
-    $("modalBackdrop").setAttribute("aria-hidden","false");
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeModal(){
-    $("modalBackdrop").classList.remove("show");
-    $("modalBackdrop").setAttribute("aria-hidden","true");
-    $("modalBody").innerHTML = "";
-    document.body.style.overflow = "";
-  }
-
-  $("modalClose").addEventListener("click", closeModal);
-  $("modalBackdrop").addEventListener("click", (e)=>{
-    if(e.target === $("modalBackdrop")) closeModal();
-  });
-  window.addEventListener("keydown", (e)=>{
-    if(e.key === "Escape") closeModal();
-  });
-
-  function priorityPill(raw){
-    const s = Number(raw ?? 0);
-    if(!isFinite(s)) return `<span class="pill neutral">—</span>`;
-
-    let cls = "neutral", icon = "•";
-    if (s >= 75000) { cls="bad"; icon="🔥"; }
-    else if (s >= 25000) { cls="warn"; icon="⚠️"; }
-    else if (s >= 5000) { cls="neutral"; icon="•"; }
-    else { cls="good"; icon="✅"; }
-
-    const pretty = s.toLocaleString(undefined,{maximumFractionDigits:2});
-    return `<span class="pill ${cls}" title="Priority score">${icon} ${pretty}</span>`;
-  }
-
-  function renderAIHuman(obj){
-    const data = obj?.result ?? obj ?? {};
-    const why = data.why_summary || data.summary || "";
-    const signals = Array.isArray(data.top_signals) ? data.top_signals : (Array.isArray(data.signals) ? data.signals : []);
-    const risks = Array.isArray(data.risks) ? data.risks : [];
-    const nba = Array.isArray(data.next_best_actions) ? data.next_best_actions : (Array.isArray(data.actions) ? data.actions : []);
-
-    const sec = (title, items) => {
-      if(!items || items.length === 0) return "";
-      return `
-        <div class="section-title">${escapeHtml(title)}</div>
-        <div class="card"><ul>${items.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul></div>
-      `;
-    };
-
-    return `
-      ${why ? `<div class="section-title">Summary</div><div class="card"><div class="subtle">${escapeHtml(why)}</div></div>` : ""}
-      ${sec("Signals", signals)}
-      ${sec("Risks", risks)}
-      ${sec("Next best actions", nba)}
-      <div class="hr"></div>
-      <details>
-        <summary class="tiny" style="cursor:pointer;">Raw JSON</summary>
-        <pre>${escapeHtml(JSON.stringify(data,null,2))}</pre>
-      </details>
-    `;
-  }
-
-  let CURRENT = { customer_id:null, invoice_id:null, row:null, detail:null };
-
-  function setDetailVisible(on){
-    $("detailEmpty").style.display = on ? "none" : "block";
-    $("detail").style.display = on ? "block" : "none";
-  }
-
-  async function loadKPIs(){
-    try{
-      const k = await apiGet(API.kpis);
-      $("kpiTotal").textContent = money(k.total_open);
-      $("kpiInv").textContent = num(k.invoice_count,0);
-      $("kpiDpd").textContent = num(k.avg_dpd,0);
-      $("kpiDisp").textContent = num(k.disputes_open,0);
-      $("asOf").textContent = "Live";
-    }catch(e){
-      $("kpiTotal").textContent = "—";
-      $("kpiInv").textContent = "—";
-      $("kpiDpd").textContent = "—";
-      $("kpiDisp").textContent = "—";
-      $("asOf").textContent = "—";
-      console.warn("KPIs failed:", e);
-    }
-  }
-
-  async function loadQueue(){
-    const bucket = $("bucket").value;
-    const minConf = Number($("minConf").value || 0.70);
-    const search = $("search").value || "";
-
-    $("queueMeta").textContent = `Top prioritized accounts for today`;
-    $("queueFooter").textContent = `Loading prioritized accounts…`;
-    $("queueBody").innerHTML = `<tr><td colspan="6" class="muted" style="padding:14px;">Loading…</td></tr>`;
-
-    try{
-      const url = new URL(API.queue);
-      url.searchParams.set("bucket", bucket);
-      url.searchParams.set("min_conf", String(minConf));
-      url.searchParams.set("top_n", "25");
-      url.searchParams.set("search", search);
-
-      const data = await apiGet(url.toString());
-      const rows = Array.isArray(data) ? data : (data.rows || []);
-
-      if(rows.length === 0){
-        $("queueBody").innerHTML = `<tr><td colspan="6" class="muted" style="padding:14px;">No prioritized accounts found. Try lowering min confidence.</td></tr>`;
-        $("queueFooter").textContent = `Showing 0 accounts`;
-        return;
-      }
-
-      $("queueBody").innerHTML = rows.map((r,i)=>{
-        const cname = r.customer_name ?? r.customer_id ?? "—";
-        const inv = r.invoice_id ?? "—";
-        const open = money(r.open_amount);
-        const dpd = num(r.days_past_due,0);
-        const action = r.recommended_action ?? "—";
-        const pr = priorityPill(r.priority_score);
-
-        return `
-          <tr class="clickable" data-i="${i}">
-            <td>
-              <div style="font-weight:800;">${escapeHtml(cname)}</div>
-              <div class="tiny mono">${escapeHtml(r.customer_id ?? "")}</div>
-            </td>
-            <td class="mono">${escapeHtml(inv)}</td>
-            <td class="right mono">${escapeHtml(open)}</td>
-            <td class="right mono">${escapeHtml(dpd)}</td>
-            <td>${escapeHtml(action)}</td>
-            <td class="right">${pr}</td>
-          </tr>
-        `;
-      }).join("");
-
-      $("queueFooter").textContent = `Showing top ${rows.length} prioritized accounts`;
-
-      [...$("queueBody").querySelectorAll("tr[data-i]")].forEach(tr=>{
-        tr.addEventListener("click", async ()=>{
-          [...$("queueBody").querySelectorAll("tr")].forEach(x=>x.classList.remove("activeRow"));
-          tr.classList.add("activeRow");
-
-          const idx = Number(tr.getAttribute("data-i"));
-          const r = rows[idx];
-          if(!r) return;
-          await loadDetail(r.customer_id, r.invoice_id, r);
-        });
-      });
-
-    }catch(e){
-      const body = e.body ? String(e.body).slice(0, 1200) : "";
-      $("queueBody").innerHTML = `
-        <tr>
-          <td colspan="6" style="padding:14px;">
-            <div class="card">
-              <div class="muted">Queue error</div>
-              <pre>${escapeHtml(`${e.message}\n\n${e.url || ""}\n\n${body}`)}</pre>
-            </div>
-          </td>
-        </tr>
-      `;
-      $("queueFooter").textContent = `Unable to load queue`;
-    }
-  }
-
-  async function loadDetail(customer_id, invoice_id, row){
-    closeModal();
-
-    CURRENT.customer_id = customer_id;
-    CURRENT.invoice_id = invoice_id;
-    CURRENT.row = row;
-
-    setDetailVisible(true);
-    $("detailMeta").textContent = `${customer_id} • ${invoice_id}`;
-    $("dTitle").textContent = `${row.customer_name ?? customer_id} — ${invoice_id}`;
-    $("dSub").textContent = `${money(row.open_amount)} • DPD ${num(row.days_past_due,0)} • ${row.aging_bucket ?? "—"}`;
-
-    $("dAction").textContent = row.recommended_action ?? "—";
-    $("dBucket").textContent = `Bucket: ${row.aging_bucket ?? "—"}`;
-    $("dConf").textContent = `Conf: ${num(row.confidence,2)}`;
-    $("dOpen").textContent = `Open: ${money(row.open_amount)}`;
-    $("dDpd").textContent = `DPD: ${num(row.days_past_due,0)}`;
-    $("dPriority").innerHTML = `Priority: ${priorityPill(row.priority_score)}`;
-
-    try{
-      const url = new URL(API.detail);
-      url.searchParams.set("customer_id", customer_id);
-      url.searchParams.set("invoice_id", invoice_id);
-      const d = await apiGet(url.toString());
-      CURRENT.detail = d;
-
-      const notes = [];
-      if (d.is_disputed_open) notes.push("Dispute is open. Resolve the issue before aggressive outreach.");
-      notes.push(`Recommended: ${d.recommended_action ?? row.recommended_action ?? "—"}`);
-      notes.push(`Confidence: ${num(d.confidence ?? row.confidence, 2)}`);
-      if (d.due_date) notes.push(`Due date: ${d.due_date}`);
-      if (d.as_of_date) notes.push(`As-of date: ${d.as_of_date}`);
-
-      $("dNotes").innerHTML = notes.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
-    }catch(e){
-      $("dNotes").innerHTML = `<li>${escapeHtml("Detail load failed, but Why (AI) may still work.")}</li>`;
-    }
-  }
-
-  async function runWhy(){
-    if(!CURRENT.customer_id || !CURRENT.invoice_id) return;
-
-    openModal("Why (AI)");
-    try{
-      const url = new URL(API.why);
-      url.searchParams.set("customer_id", CURRENT.customer_id);
-      url.searchParams.set("invoice_id", CURRENT.invoice_id);
-
-      let data;
-      try{
-        data = await apiGet(url.toString());
-      }catch(e){
-        const url2 = new URL(API.whyFallback);
-        url2.searchParams.set("customer_id", CURRENT.customer_id);
-        url2.searchParams.set("invoice_id", CURRENT.invoice_id);
-        data = await apiGet(url2.toString());
-      }
-
-      $("modalBody").innerHTML = renderAIHuman(data);
-    }catch(e){
-      $("modalBody").innerHTML = `
-        <div class="card">
-          <div class="muted">Why (AI) error</div>
-          <pre>${escapeHtml((e.body ? e.body : e.message) || "Unknown error")}</pre>
-        </div>
-      `;
-    }
-  }
-
-  async function runBrief(){
-    openModal("Daily Brief");
-    try{
-      const url = new URL(API.brief);
-      url.searchParams.set("top_n","15");
-      const data = await apiGet(url.toString());
-
-      const text = data.brief || data.text || data.summary || "";
-      $("modalBody").innerHTML = text
-        ? `<div class="section-title">Brief</div><div class="card"><div class="subtle">${escapeHtml(text)}</div></div>
-           <div class="hr"></div>
-           <details><summary class="tiny" style="cursor:pointer;">Raw JSON</summary><pre>${escapeHtml(JSON.stringify(data,null,2))}</pre></details>`
-        : renderAIHuman(data);
-
-    }catch(e){
-      $("modalBody").innerHTML = `
-        <div class="card">
-          <div class="muted">Daily brief error</div>
-          <pre>${escapeHtml((e.body ? e.body : e.message) || "Unknown error")}</pre>
-        </div>
-      `;
-    }
-  }
-
-  function draftPlaceholder(kind){
-    openModal(kind);
-    $("modalBody").innerHTML = `
-      <div class="card">
-        <div class="muted">Placeholder</div>
-        <div class="subtle" style="margin-top:8px;">
-          Next phase: generate a ${escapeHtml(kind.toLowerCase())} based on the selected account.
-        </div>
-      </div>
-    `;
-  }
-
-  $("btnWhy").addEventListener("click", runWhy);
-  $("btnBrief").addEventListener("click", runBrief);
-  $("btnRefresh").addEventListener("click", async ()=>{
-    await loadKPIs();
-    await loadQueue();
-    if(CURRENT.customer_id && CURRENT.invoice_id && CURRENT.row){
-      await loadDetail(CURRENT.customer_id, CURRENT.invoice_id, CURRENT.row);
-    }
-  });
-
-  $("btnDraftEmail").addEventListener("click", ()=>draftPlaceholder("Draft Email"));
-  $("btnDraftCall").addEventListener("click", ()=>draftPlaceholder("Draft Call"));
-  $("btnApply").addEventListener("click", loadQueue);
-
-  $("minConf").addEventListener("input", ()=>{
-    $("minConfLabel").textContent = Number($("minConf").value).toFixed(2);
-  });
-
-  $("search").addEventListener("keydown", (e)=>{
-    if(e.key === "Enter") loadQueue();
-  });
-
-  (async function init(){
-    $("minConfLabel").textContent = Number($("minConf").value).toFixed(2);
-    await loadKPIs();
-    await loadQueue();
-  })();
+document.getElementById("btnWhy").onclick = openModal;
 </script>
+
 </body>
 </html>
